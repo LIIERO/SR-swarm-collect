@@ -72,16 +72,19 @@ public class Agent : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision) // Get the ball
     {
-        if (Mode == AgentMode.gettingBall && collision.gameObject ==  ballToGet)
+        if (Mode == AgentMode.gettingBall && collision.gameObject == ballToGet)
         {
-            ballToGet = null;
-            Destroy(collision.gameObject);
+            //ballToGet = null;
+            //Destroy(collision.gameObject);
+            PickBallUp(collision.gameObject);
             Mode = AgentMode.bringingBallBack;
         }
 
         if (Mode == AgentMode.bringingBallBack && collision.gameObject == ballBasket)
         {
             Mode = AgentMode.idle;
+            Destroy(ballToGet); // throw the ball in the basket
+            ballToGet = null;
             // TODO: Increment ball counter or something (by invoking an event)
         }
     }
@@ -121,12 +124,18 @@ public class Agent : MonoBehaviour
         foreach (GameObject ball in ballList) // TODO: Go through the balls from closest to furthest
         {
             Ball ballScript = ball.GetComponent<Ball>();
-            if (ballScript.Reserved == false)
+            if (ballScript.Reserved == false && ballScript.Carried == false)
             {
                 ballScript.Reserved = true;
                 return ball;
             }
         }
         return null;
+    }
+
+    private void PickBallUp(GameObject ball)
+    {
+        Ball ballScript = ball.GetComponent<Ball>();
+        ballScript.AttachToAgent(transform);
     }
 }
