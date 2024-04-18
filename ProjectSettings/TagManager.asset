@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ball
   - Agent
+  - Basket
   layers:
   - Default
   - TransparentFX
