@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using GlobalEnums;
 using System.Linq;
+using Pathfinding;
+using System;
 
 public class Agent : MonoBehaviour, IDetectable
 {
@@ -14,6 +16,7 @@ public class Agent : MonoBehaviour, IDetectable
 
     public float viewRange = 10.0f;
     public float movementSpeed = 2.0f;
+    private AIPath aiPath;
 
     private Dictionary<string, List<IDetectable>> currentObjectsInRange = new();
     //private List<ICollectable> collectablesInRange = new();
@@ -22,6 +25,11 @@ public class Agent : MonoBehaviour, IDetectable
 
     public Vector3 GetPosition() { return transform.position; }
     public string GetTag() { return tag; }
+
+    private void Awake()
+    {
+        aiPath = GetComponent<AIPath>();
+    }
 
     // Start is called before the first frame update
     private void Start()
@@ -59,12 +67,19 @@ public class Agent : MonoBehaviour, IDetectable
         if (Mode == AgentMode.gettingBall)
         {
             // TODO A* where the goal is the ballToGet and everything else is an obstacle
-            transform.position = Vector3.MoveTowards(transform.position, collectableToGet.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary
+            /*transform.position = Vector3.MoveTowards(transform.position, collectableToGet.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary*/
+            aiPath.destination = collectableToGet.GetPosition();
+      
+            aiPath.maxSpeed = movementSpeed;
+
         }
         if (Mode == AgentMode.bringingBallBack)
         {
             // TODO A* where the goal is the ballBasket and everything else is an obstacle
-            transform.position = Vector3.MoveTowards(transform.position, ballBasket.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary
+           /* transform.position = Vector3.MoveTowards(transform.position, ballBasket.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary*/
+            aiPath.destination = ballBasket.GetPosition();
+      
+            aiPath.maxSpeed = movementSpeed;
         }
         if (Mode == AgentMode.searching)
         {
@@ -90,6 +105,7 @@ public class Agent : MonoBehaviour, IDetectable
         else if (Mode == AgentMode.bringingBallBack)
         {
             IVessel detectedVessel = GetInterfaceOfObject<IVessel>(collision.gameObject);
+            Debug.Log(detectedVessel);
             if (detectedVessel != ballBasket) return;
 
             Mode = AgentMode.idle;
