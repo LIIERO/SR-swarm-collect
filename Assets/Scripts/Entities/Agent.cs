@@ -16,6 +16,8 @@ public class Agent : MonoBehaviour, IDetectable
 
     public float viewRange = 10.0f;
     public float movementSpeed = 2.0f;
+
+
     private AIPath aiPath;
 
     private Dictionary<string, List<IDetectable>> currentObjectsInRange = new();
@@ -26,20 +28,18 @@ public class Agent : MonoBehaviour, IDetectable
     public Vector3 GetPosition() { return transform.position; }
     public string GetTag() { return tag; }
 
-    private void Awake()
-    {
-        aiPath = GetComponent<AIPath>();
-    }
 
     // Start is called before the first frame update
     private void Start()
     {
+
         ID = nextId;
         nextId += 1;
         //Debug.Log("ID set: " + ID.ToString());
 
         Mode = AgentMode.idle;
         ballBasket = FindObjectOfType<Basket>();
+        aiPath = GetComponent<AIPath>();
     }
 
     // Update is called once per frame
@@ -69,7 +69,7 @@ public class Agent : MonoBehaviour, IDetectable
             // TODO A* where the goal is the ballToGet and everything else is an obstacle
             /*transform.position = Vector3.MoveTowards(transform.position, collectableToGet.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary*/
             aiPath.destination = collectableToGet.GetPosition();
-      
+
             aiPath.maxSpeed = movementSpeed;
 
         }
@@ -90,22 +90,27 @@ public class Agent : MonoBehaviour, IDetectable
         //Debug.Log("Agent " + ID.ToString() + ": " + Mode.ToString());
     }
 
-    private void OnCollisionEnter(Collision collision) // Get the ball
+    private void MoveTowardsCollectable(ICollectable collectable)
+    {
+        transform.position = Vector3.MoveTowards(transform.position, collectableToGet.GetPosition(), movementSpeed * Time.fixedDeltaTime);
+    }
+
+
+
+    private void OnTriggerEnter(Collider other)
     {
         if (Mode == AgentMode.gettingBall)
         {
             //if (!collision.gameObject.TryGetComponent<ICollectable>(out var detectedCollectable)) return;
-            ICollectable detectedCollectable = GetInterfaceOfObject<ICollectable>(collision.gameObject);
+            ICollectable detectedCollectable = GetInterfaceOfObject<ICollectable>(other.gameObject);
             if (detectedCollectable != collectableToGet) return;
 
             detectedCollectable.Collect(GetComponent<IDetectable>());
             Mode = AgentMode.bringingBallBack;
-        }
-
-        else if (Mode == AgentMode.bringingBallBack)
+         
+        } else if (Mode == AgentMode.bringingBallBack)
         {
-            IVessel detectedVessel = GetInterfaceOfObject<IVessel>(collision.gameObject);
-            Debug.Log(detectedVessel);
+            IVessel detectedVessel = GetInterfaceOfObject<IVessel>(other.gameObject);
             if (detectedVessel != ballBasket) return;
 
             Mode = AgentMode.idle;
@@ -115,9 +120,9 @@ public class Agent : MonoBehaviour, IDetectable
         }
     }
 
-    // TODO: Store information about how far each object is?
-    // Returns a dictionary where key is the tag of an object, and value is a list of objects with that tag that were seen
-    private Dictionary<string, List<IDetectable>> GetObjectsInRange(float range)
+        // TODO: Store information about how far each object is?
+        // Returns a dictionary where key is the tag of an object, and value is a list of objects with that tag that were seen
+        private Dictionary<string, List<IDetectable>> GetObjectsInRange(float range)
     {
         Dictionary<string, List<IDetectable>> tagObjListPairs = new();
 

@@ -133,6 +133,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewRange: 10
   movementSpeed: 2
+  switchDistance: 0.5
 --- !u!54 &1495672059189885479
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -201,7 +202,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   version: 5
-  radius: 1.5
+  radius: 2
   height: 2
   canMove: 1
   maxSpeed: 1
@@ -216,7 +217,7 @@ MonoBehaviour:
   enableRotation: 1
   autoRepath:
     mode: 1
-    interval: 0.3
+    interval: 0.2
     sensitivity: 15.92
     maximumInterval: 5
     visualizeSensitivity: 0

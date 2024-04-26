@@ -32,6 +32,13 @@ public class SimulationManager : MonoBehaviour
                 AstarPath.active.UpdateGraphs(obstacle.GetComponent<Collider>().bounds);
             }
 
+            GameObject[] ObstacleBall = GameObject.FindGameObjectsWithTag("Ball");
+
+            foreach (GameObject obstacle in ObstacleBall)
+            {
+                AstarPath.active.UpdateGraphs(obstacle.GetComponent<Collider>().bounds);
+            }
+
             yield return new WaitForSeconds(updateInterval);
         }
     }
