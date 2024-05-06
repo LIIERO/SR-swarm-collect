@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Ball : MonoBehaviour, ICollectable
 {
+    public static int Count;
+
     [SerializeField] private float carryHeight = 0.25f;
     private bool reserved;
     private bool collected;
@@ -21,8 +23,9 @@ public class Ball : MonoBehaviour, ICollectable
     public bool IsCollected() { return collected; }
     public void Dispose() { Destroy(gameObject); }
 
-    private void Start()
+    private void Awake()
     {
+        Count++;
         reserved = false;
         collected = false;
     }

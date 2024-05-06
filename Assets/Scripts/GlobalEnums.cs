@@ -4,6 +4,6 @@ using UnityEngine;
 
 namespace GlobalEnums
 {
-    public enum AgentMode { idle, searching, gettingBall, bringingBallBack}
+    public enum AgentMode { idle, searching, gettingBall, bringingBallBack }
 
 }

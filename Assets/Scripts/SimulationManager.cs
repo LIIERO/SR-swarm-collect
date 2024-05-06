@@ -7,6 +7,14 @@ public class SimulationManager : MonoBehaviour
 {
     public List<Agent> agents; // Lista agentów w symulacji
     private float updateInterval = 0.05f; // Czas w sekundach miêdzy aktualizacjami
+    private bool acquisitionActive;
+    private bool acquisitionFinished;
+
+    private void Awake()
+    {
+        acquisitionActive = false;
+        acquisitionFinished = false;
+    }
 
     private void Start()
     {
@@ -23,20 +31,22 @@ public class SimulationManager : MonoBehaviour
             }
         }
         StartCoroutine(UpdateGraphs());
+
+        ToggleAcquisition();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.R)) // Reload current scene
         {
-            Agent.nextId = 0; // reset id, temporary
+            Agent.nextId = 0; // reset id
+            Ball.Count = 0; // reset ball count
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         if (Input.GetKeyDown(KeyCode.Space)) // Wstrzymaj lub wznow akwizycjê
         {
-            Debug.Log(agents);
-            ToggleAgentsAcquisition();
+            ToggleAcquisition();
         }
     }
 
@@ -62,11 +72,36 @@ public class SimulationManager : MonoBehaviour
         }
     }
 
-    private void ToggleAgentsAcquisition()
+    private void ToggleAcquisition()
     {
-        foreach (Agent agent in agents)
+        if (acquisitionFinished) return;
+
+        if (acquisitionActive)
         {
-            agent.ToggleAcquisition(); // Wstrzymaj lub wznow akwizycjê dla ka¿dego agenta
+            EventManager.InvokeAcquisitionPauseEvent();
         }
+        else
+        {
+            EventManager.InvokeAcquisitionStartEvent();
+        }
+    }
+
+
+    private void PauseAcquisition() { acquisitionActive = false; }
+    private void StartAcquisition() { acquisitionActive = true; }
+    private void EndAcquisition() { acquisitionFinished = true; }
+
+    private void OnEnable()
+    {
+        EventManager.AcquisitionPauseEvent += PauseAcquisition;
+        EventManager.AcquisitionStartEvent += StartAcquisition;
+        EventManager.AcquisitionEndEvent += EndAcquisition;
+    }
+
+    private void OnDisable()
+    {
+        EventManager.AcquisitionPauseEvent -= PauseAcquisition;
+        EventManager.AcquisitionStartEvent -= StartAcquisition;
+        EventManager.AcquisitionEndEvent -= EndAcquisition;
     }
 }

@@ -19,7 +19,8 @@ public class Agent : MonoBehaviour, IDetectable
 
     private AIPath aiPath;
     private Vector3 startPosition; // Start position of the agent
-    private bool acquisitionPaused = false; // Flag indicating whether acquisition is paused
+    private Quaternion startRotation;
+    private bool acquisitionActive = false; // Flag indicating whether acquisition is running
 
 
     private Dictionary<string, List<IDetectable>> currentObjectsInRange = new();
@@ -38,77 +39,79 @@ public class Agent : MonoBehaviour, IDetectable
     // Start is called before the first frame update
     private void Start()
     {
-
         ID = nextId;
         nextId += 1;
         //Debug.Log("ID set: " + ID.ToString());
 
         Mode = AgentMode.idle;
         ballBasket = FindObjectOfType<Basket>();
-        aiPath = GetComponent<AIPath>();
-        startPosition = transform.position; // Save the start position
+
+        startPosition = transform.position; // Save the start position and rotation
+        startRotation = transform.rotation;
     }
 
     // Update is called once per frame
     private void FixedUpdate() // Przyda³a by siê maszyna stanów ale mo¿e nie warto
     {
-        if (!acquisitionPaused)
-        {
-            currentObjectsInRange = GetObjectsInRange(viewRange);
-            //Debug.Log(currentObjectsInRange["Ball"][0].name);
-
-            // Update state (very shitty state machine replacement)
-            if (Mode == AgentMode.idle) // TODO: Po³¹czyæ idle i searching ze sob¹
-            {
-                // Assign a new ball to collect TODO: what if there are no balls to be seen?
-                if (currentObjectsInRange.ContainsKey("Ball")) // Ball found in the field of view
-                {
-                    collectableToGet = ReserveCollectable(currentObjectsInRange["Ball"]);
-                    Mode = AgentMode.gettingBall;
-                    if (collectableToGet == null) // Nothing unreserved was found
-                        Mode = AgentMode.searching;
-                }
-                else // No ball found
-                {
-                    Mode = AgentMode.searching;
-                }
-            }
-            if (Mode == AgentMode.gettingBall)
-            {
-                // TODO A* where the goal is the ballToGet and everything else is an obstacle
-                /*transform.position = Vector3.MoveTowards(transform.position, collectableToGet.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary*/
-                aiPath.destination = collectableToGet.GetPosition();
-
-                aiPath.maxSpeed = movementSpeed;
-
-            }
-            if (Mode == AgentMode.bringingBallBack)
-            {
-                // TODO A* where the goal is the ballBasket and everything else is an obstacle
-                /* transform.position = Vector3.MoveTowards(transform.position, ballBasket.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary*/
-                aiPath.destination = ballBasket.GetPosition();
-
-                aiPath.maxSpeed = movementSpeed;
-            }
-            if (Mode == AgentMode.searching)
-            {
-                // TODO
-                Mode = AgentMode.idle; // Delete this
-            }
-        }
-        else // If acquisition is paused, return to start position
+        if (!acquisitionActive) // If acquisition is paused, return to start position
         {
             if (Vector3.Distance(transform.position, startPosition) <= 0.1f)
             {
                 aiPath.maxSpeed = 0f; // Zatrzymaj agenta
+                transform.rotation = startRotation; // ustaw agenta do pierwotnej rotacji
             }
             else
             {
                 aiPath.destination = startPosition;
                 aiPath.maxSpeed = movementSpeed; // Ustaw prêdkoœæ agenta na normaln¹
             }
+
+            return;
         }
 
+
+        currentObjectsInRange = GetObjectsInRange(viewRange);
+        //Debug.Log(currentObjectsInRange["Ball"][0].name);
+
+        // Update state (very shitty state machine replacement)
+        if (Mode == AgentMode.idle) // TODO: Po³¹czyæ idle i searching ze sob¹
+        {
+            // Assign a new ball to collect TODO: what if there are no balls to be seen?
+            if (currentObjectsInRange.ContainsKey("Ball")) // Ball found in the field of view
+            {
+                collectableToGet = ReserveCollectable(currentObjectsInRange["Ball"]);
+                Mode = AgentMode.gettingBall;
+                if (collectableToGet == null) // Nothing unreserved was found
+                    Mode = AgentMode.searching;
+            }
+            else // No ball found
+            {
+                Mode = AgentMode.searching;
+            }
+        }
+        if (Mode == AgentMode.gettingBall)
+        {
+            // TODO A* where the goal is the ballToGet and everything else is an obstacle
+            /*transform.position = Vector3.MoveTowards(transform.position, collectableToGet.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary*/
+            aiPath.destination = collectableToGet.GetPosition();
+
+            aiPath.maxSpeed = movementSpeed;
+
+        }
+        if (Mode == AgentMode.bringingBallBack)
+        {
+            // TODO A* where the goal is the ballBasket and everything else is an obstacle
+            /* transform.position = Vector3.MoveTowards(transform.position, ballBasket.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary*/
+            aiPath.destination = ballBasket.GetPosition();
+
+            aiPath.maxSpeed = movementSpeed;
+        }
+        if (Mode == AgentMode.searching)
+        {
+            // TODO
+            Mode = AgentMode.idle; // Delete this
+        }
+        
         //Debug.Log("Agent " + ID.ToString() + ": " + Mode.ToString());
     }
 
@@ -131,14 +134,21 @@ public class Agent : MonoBehaviour, IDetectable
 
             Mode = AgentMode.idle;
             detectedVessel.Fill(collectableToGet); // throw the ball in the basket
+            if (detectedVessel.GetFilledCollectableCount() >= Ball.Count) // Check if every ball is collected
+            {
+                Debug.Log("+++++++++KONIEC+++++++++");
+                EventManager.InvokeAcquisitionPauseEvent();
+                EventManager.InvokeAcquisitionEndEvent();
+            }
+
             collectableToGet = null;
-            // Ball counter inside the basket
         }
     }
 
-        // TODO: Store information about how far each object is?
-        // Returns a dictionary where key is the tag of an object, and value is a list of objects with that tag that were seen
-        private Dictionary<string, List<IDetectable>> GetObjectsInRange(float range)
+
+    // TODO: Store information about how far each object is?
+    // Returns a dictionary where key is the tag of an object, and value is a list of objects with that tag that were seen
+    private Dictionary<string, List<IDetectable>> GetObjectsInRange(float range)
     {
         Dictionary<string, List<IDetectable>> tagObjListPairs = new();
 
@@ -180,9 +190,20 @@ public class Agent : MonoBehaviour, IDetectable
         return interf;
     }
 
+
     // Method to pause and resume acquisition
-    public void ToggleAcquisition()
+    private void StartAcquisition() { acquisitionActive = true; }
+    private void PauseAcquisition() { acquisitionActive = false; }
+
+    private void OnEnable()
     {
-        acquisitionPaused = !acquisitionPaused;
+        EventManager.AcquisitionStartEvent += StartAcquisition;
+        EventManager.AcquisitionPauseEvent += PauseAcquisition;
+    }
+
+    private void OnDisable()
+    {
+        EventManager.AcquisitionStartEvent -= StartAcquisition;
+        EventManager.AcquisitionPauseEvent -= PauseAcquisition;
     }
 }
