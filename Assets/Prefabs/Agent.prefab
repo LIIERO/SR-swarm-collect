@@ -133,7 +133,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewRange: 10
   movementSpeed: 2
-  switchDistance: 0.5
 --- !u!54 &1495672059189885479
 Rigidbody:
   m_ObjectHideFlags: 0

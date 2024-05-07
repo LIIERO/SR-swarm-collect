@@ -58,7 +58,8 @@ public class Agent : MonoBehaviour, IDetectable
             if (Vector3.Distance(transform.position, startPosition) <= 0.1f)
             {
                 aiPath.maxSpeed = 0f; // Zatrzymaj agenta
-                transform.rotation = startRotation; // ustaw agenta do pierwotnej rotacji
+                transform.rotation = startRotation; // ustaw agenta do pierwotnej pozycji rotacji
+                transform.position = startPosition;
             }
             else
             {
@@ -89,27 +90,27 @@ public class Agent : MonoBehaviour, IDetectable
                 Mode = AgentMode.searching;
             }
         }
-        if (Mode == AgentMode.gettingBall)
+        else if (Mode == AgentMode.gettingBall)
         {
             // TODO A* where the goal is the ballToGet and everything else is an obstacle
             /*transform.position = Vector3.MoveTowards(transform.position, collectableToGet.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary*/
             aiPath.destination = collectableToGet.GetPosition();
-
             aiPath.maxSpeed = movementSpeed;
 
         }
-        if (Mode == AgentMode.bringingBallBack)
+        else if (Mode == AgentMode.bringingBallBack)
         {
             // TODO A* where the goal is the ballBasket and everything else is an obstacle
             /* transform.position = Vector3.MoveTowards(transform.position, ballBasket.GetPosition(), movementSpeed * Time.fixedDeltaTime); // Temporary*/
             aiPath.destination = ballBasket.GetPosition();
-
             aiPath.maxSpeed = movementSpeed;
         }
-        if (Mode == AgentMode.searching)
+        else if (Mode == AgentMode.searching)
         {
             // TODO
             Mode = AgentMode.idle; // Delete this
+            aiPath.destination = startPosition; // temp
+            aiPath.maxSpeed = movementSpeed; // temp
         }
         
         //Debug.Log("Agent " + ID.ToString() + ": " + Mode.ToString());
