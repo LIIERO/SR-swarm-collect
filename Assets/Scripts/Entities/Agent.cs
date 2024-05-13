@@ -13,8 +13,13 @@ public class Agent : MonoBehaviour, IDetectable
     public static int nextId = 0; // For simple initialization of unique id
     private IVessel ballBasket;
 
-    public float viewRange = 10.0f;
+    public float viewRange = 1.0f;
     public float movementSpeed = 2.0f;
+    
+    public float speed = 1f;
+    private Vector3 direction;
+    private float changeDirectionTime = 2f;
+    private float timer;
 
 
     private AIPath aiPath;
@@ -107,10 +112,47 @@ public class Agent : MonoBehaviour, IDetectable
         }
         else if (Mode == AgentMode.searching)
         {
+            {
+                // Zmniejsz licznik czasu
+                timer -= Time.deltaTime;
+
+                // Jeœli up³yn¹³ czas do zmiany kierunku
+                if (timer <= 0)
+                {
+                    // Wylosuj nowy kierunek
+                    direction = GetRandomDirection();
+                    // Zresetuj timer
+                    timer = changeDirectionTime;
+                }
+
+                // Przesuñ agenta w wybranym kierunku
+                transform.Translate(direction * speed * Time.deltaTime);
+            }
+
+            // Metoda do losowania kierunku
+            Vector3 GetRandomDirection()
+            {
+                // Wylosuj liczbê od 0 do 3
+                int randomNum = Random.Range(0, 4);
+                // Zwróæ odpowiedni wektor kierunku
+                switch (randomNum)
+                {
+                    case 0:
+                        return Vector3.forward; // Ruch do przodu
+                    case 1:
+                        return Vector3.back; // Ruch do ty³u
+                    case 2:
+                        return Vector3.left; // Ruch w lewo
+                    case 3:
+                        return Vector3.right; // Ruch w prawo
+                    default:
+                        return Vector3.forward; // Domyœlnie ruch do przodu
+                }
+            }
             // TODO
-            Mode = AgentMode.idle; // Delete this
-            aiPath.destination = startPosition; // temp
-            aiPath.maxSpeed = movementSpeed; // temp
+            //Mode = AgentMode.idle; // Delete this
+            //aiPath.destination = startPosition; // temp
+            //aiPath.maxSpeed = movementSpeed; // temp
         }
         
         //Debug.Log("Agent " + ID.ToString() + ": " + Mode.ToString());
