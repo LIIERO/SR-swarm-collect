@@ -5,7 +5,10 @@ using UnityEngine.SceneManagement;
 
 public class SimulationManager : MonoBehaviour
 {
-    public List<Agent> agents; // Lista agentów w symulacji
+    [SerializeField] private int noAgents;
+    private int maxAgents;
+
+    private List<Agent> agents; // Lista agentów w symulacji
     private float updateInterval = 0.05f; // Czas w sekundach miêdzy aktualizacjami
     private bool acquisitionActive;
     private bool acquisitionFinished;
@@ -14,6 +17,7 @@ public class SimulationManager : MonoBehaviour
     {
         acquisitionActive = false;
         acquisitionFinished = false;
+        //maxAgents = GetObjectsOfType
     }
 
     private void Start()
@@ -33,21 +37,22 @@ public class SimulationManager : MonoBehaviour
         StartCoroutine(UpdateGraphs());
 
         ToggleAcquisition();
+        StartCoroutine(InitializeAgents());
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.R)) // Reload current scene
         {
-            Agent.nextId = 0; // reset id
-            Ball.Count = 0; // reset ball count
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            RestartSimulation();
         }
 
         if (Input.GetKeyDown(KeyCode.Space)) // Wstrzymaj lub wznow akwizycjê
         {
             ToggleAcquisition();
         }
+
+        //Debug.LogWarning(acquisitionFinished);
     }
 
     private IEnumerator UpdateGraphs()
@@ -84,6 +89,19 @@ public class SimulationManager : MonoBehaviour
         {
             EventManager.InvokeAcquisitionStartEvent();
         }
+    }
+
+    private IEnumerator InitializeAgents()
+    {
+        yield return null;
+        EventManager.InvokeAgentInitializationEvent(noAgents);
+    }
+    
+    private void RestartSimulation()
+    {
+        Agent.nextId = 0; // reset id
+        Ball.Count = 0; // reset ball count
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // reload current scene
     }
 
 
