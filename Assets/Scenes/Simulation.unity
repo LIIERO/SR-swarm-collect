@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -201,7 +201,7 @@ GameObject:
   - component: {fileID: 45417593}
   m_Layer: 0
   m_Name: Wall (1)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -570,9 +570,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Ball: {fileID: 5033623571535989281, guid: 579cdce561664ec4e91b3a0d6d1f3dbf, type: 3}
-  numberOfBalls: 10
-  spawnRadius: 5
+  numberOfBalls: 15
   planeHeight: 0.125
+  ballRadius: 0.125
+  outerSquareMin: {x: -4.9, y: -4.9}
+  outerSquareMax: {x: 4.9, y: 4.9}
+  innerSquareMin: {x: -1, y: -1}
+  innerSquareMax: {x: 1, y: 1}
 --- !u!1001 &380535812
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -722,7 +726,7 @@ GameObject:
   - component: {fileID: 394387677}
   m_Layer: 6
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1487,7 +1491,7 @@ GameObject:
   - component: {fileID: 1050984106}
   m_Layer: 0
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1594,7 +1598,7 @@ GameObject:
   - component: {fileID: 1174546996}
   m_Layer: 0
   m_Name: Wall (4)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1918,7 +1922,7 @@ GameObject:
   - component: {fileID: 1677636707}
   m_Layer: 0
   m_Name: Wall (2)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1976,7 +1980,7 @@ GameObject:
   - component: {fileID: 1698565268}
   m_Layer: 0
   m_Name: Wall (3)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2222,6 +2226,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1591683129}
     m_Modifications:
+    - target: {fileID: 2768842198852177964, guid: 579cdce561664ec4e91b3a0d6d1f3dbf, type: 3}
+      propertyPath: m_Radius
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3745798375448227540, guid: 579cdce561664ec4e91b3a0d6d1f3dbf, type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5033623571535989281, guid: 579cdce561664ec4e91b3a0d6d1f3dbf, type: 3}
       propertyPath: m_Name
       value: Ball (10)
@@ -2233,6 +2245,18 @@ PrefabInstance:
     - target: {fileID: 5033623571535989281, guid: 579cdce561664ec4e91b3a0d6d1f3dbf, type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6983158663965941415, guid: 579cdce561664ec4e91b3a0d6d1f3dbf, type: 3}
+      propertyPath: m_Size.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6983158663965941415, guid: 579cdce561664ec4e91b3a0d6d1f3dbf, type: 3}
+      propertyPath: m_Size.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8238397505317064915, guid: 579cdce561664ec4e91b3a0d6d1f3dbf, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 8238397505317064915, guid: 579cdce561664ec4e91b3a0d6d1f3dbf, type: 3}
       propertyPath: m_LocalPosition.x

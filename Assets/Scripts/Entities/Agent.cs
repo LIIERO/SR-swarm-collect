@@ -131,7 +131,7 @@ public class Agent : MonoBehaviour, IDetectable
 
 
                 // Ja tymczasowo da³em kierunek szukania razy 5 jako pozycjê do której zmierza, pobaw siê tym
-                aiPath.destination = searchDirection * 5; // tutaj trzeba daæ POZYCJÊ do której agent ma iœæ jak szuka
+                aiPath.destination = searchDirection * 4; // tutaj trzeba daæ POZYCJÊ do której agent ma iœæ jak szuka
                 aiPath.maxSpeed = movementSpeed;
 
                 // Zresetuj timer
@@ -142,21 +142,51 @@ public class Agent : MonoBehaviour, IDetectable
             // Metoda do losowania kierunku
             Vector3 GetRandomDirection()
             {
-                // Wylosuj liczbê od 0 do 3
-                int randomNum = Random.Range(0, 4);
+                // Wylosuj liczbê od 0 do 18
+                int randomNum = Random.Range(0, 18);
                 // Zwróæ odpowiedni wektor kierunku
                 switch (randomNum)
                 {
                     case 0:
-                        return Vector3.forward; // Ruch do przodu
+                        return Vector3.forward; // Ruch do góry
                     case 1:
-                        return Vector3.back; // Ruch do ty³u
+                        return Vector3.back; // Ruch do do³u
                     case 2:
                         return Vector3.left; // Ruch w lewo
                     case 3:
                         return Vector3.right; // Ruch w prawo
+                    case 4:
+                        return (Vector3.forward + Vector3.left).normalized; // Ruch ukoœny w lewo do góry
+                    case 5:
+                        return (Vector3.forward + Vector3.right).normalized; // Ruch ukoœny w prawo do góry
+                    case 6:
+                        return (Vector3.back + Vector3.left).normalized; // Ruch ukoœny w lewo do do³u
+                    case 7:
+                        return (Vector3.back + Vector3.right).normalized; // Ruch ukoœny w prawo do do³u
+                    case 8:
+                        return Vector3.left; // Ruch w lewo
+                    case 9:
+                        return Vector3.left; // Ruch w lewo
+                    case 10:
+                        return (Vector3.forward + Vector3.left).normalized; // Ruch ukoœny w lewo do góry
+                    case 11:
+                        return (Vector3.forward + Vector3.left).normalized; // Ruch ukoœny w lewo do góry
+                    case 12:
+                        return (Vector3.forward + Vector3.left).normalized; // Ruch ukoœny w lewo do góry
+                    case 13:
+                        return (Vector3.forward + Vector3.right).normalized; // Ruch ukoœny w prawo do góry
+                    case 14:
+                        return (Vector3.back + Vector3.left).normalized; // Ruch ukoœny w lewo do do³u
+                    case 15:
+                        return (Vector3.back + Vector3.left).normalized; // Ruch ukoœny w lewo do do³u
+                    case 16:
+                        return (Vector3.back + Vector3.left).normalized; // Ruch ukoœny w lewo do do³u
+                    case 17:
+                        return (Vector3.back + Vector3.right).normalized; // Ruch ukoœny w prawo do do³u
+                    case 18:
+                        return (Vector3.back + Vector3.right).normalized; // Ruch ukoœny w prawo do do³u
                     default:
-                        return Vector3.forward; // Domyœlnie ruch do przodu
+                        return Vector3.forward; // Domyœlnie ruch do góry
                 }
             }  
         }
