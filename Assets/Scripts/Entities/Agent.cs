@@ -4,6 +4,7 @@ using GlobalEnums;
 using System.Linq;
 using Pathfinding;
 using Unity.VisualScripting;
+using UnityEditor.Search;
 
 public class Agent : MonoBehaviour, IDetectable
 {
@@ -12,15 +13,20 @@ public class Agent : MonoBehaviour, IDetectable
 
     public static int nextId = 0; // For simple initialization of unique id
     private IVessel ballBasket;
-
-    public float viewRange = 10.0f;
+    
+    public float viewRange = 1.0f;
     public float movementSpeed = 2.0f;
+    
+    private Vector3 searchDirection;
+    private float changeSearchDirectionTime = 2f;
+    private float searchTimer;
 
 
     private AIPath aiPath;
     private Vector3 startPosition; // Start position of the agent
     private Quaternion startRotation;
     private bool acquisitionActive = false; // Flag indicating whether acquisition is running
+    private bool isInitialized = false;
 
 
     private Dictionary<string, List<IDetectable>> currentObjectsInRange = new();
@@ -39,6 +45,8 @@ public class Agent : MonoBehaviour, IDetectable
     // Start is called before the first frame update
     private void Start()
     {
+        aiPath.maxSpeed = movementSpeed;
+
         ID = nextId;
         nextId += 1;
         //Debug.Log("ID set: " + ID.ToString());
@@ -53,6 +61,8 @@ public class Agent : MonoBehaviour, IDetectable
     // Update is called once per frame
     private void FixedUpdate() // Przyda³a by siê maszyna stanów ale mo¿e nie warto
     {
+        if (!isInitialized) return;
+
         if (!acquisitionActive) // If acquisition is paused, return to start position
         {
             if (Vector3.Distance(transform.position, startPosition) <= 0.1f)
@@ -80,6 +90,7 @@ public class Agent : MonoBehaviour, IDetectable
             // Assign a new ball to collect TODO: what if there are no balls to be seen?
             if (currentObjectsInRange.ContainsKey("Ball")) // Ball found in the field of view
             {
+                //Debug.LogWarning(currentObjectsInRange["Ball"].Count);
                 collectableToGet = ReserveCollectable(currentObjectsInRange["Ball"]);
                 Mode = AgentMode.gettingBall;
                 if (collectableToGet == null) // Nothing unreserved was found
@@ -107,10 +118,77 @@ public class Agent : MonoBehaviour, IDetectable
         }
         else if (Mode == AgentMode.searching)
         {
-            // TODO
-            Mode = AgentMode.idle; // Delete this
-            aiPath.destination = startPosition; // temp
-            aiPath.maxSpeed = movementSpeed; // temp
+            Mode = AgentMode.idle; // To jest potrzebne ¿eby agent mia³ szansê wykryæ obiekty i wyjœæ ze stanu szukania
+
+            // Zmniejsz licznik czasu
+            searchTimer -= Time.deltaTime;
+
+            // Jeœli up³yn¹³ czas do zmiany kierunku
+            if (searchTimer <= 0)
+            {
+                // Wylosuj nowy kierunek
+                searchDirection = GetRandomDirection();
+
+
+                // Ja tymczasowo da³em kierunek szukania razy 5 jako pozycjê do której zmierza, pobaw siê tym
+                aiPath.destination = searchDirection * 4; // tutaj trzeba daæ POZYCJÊ do której agent ma iœæ jak szuka
+                aiPath.maxSpeed = movementSpeed;
+
+                // Zresetuj timer
+                searchTimer = changeSearchDirectionTime;
+            }
+
+
+            // Metoda do losowania kierunku
+            Vector3 GetRandomDirection()
+            {
+                // Wylosuj liczbê od 0 do 18
+                int randomNum = Random.Range(0, 18);
+                // Zwróæ odpowiedni wektor kierunku
+                switch (randomNum)
+                {
+                    case 0:
+                        return Vector3.forward; // Ruch do góry
+                    case 1:
+                        return Vector3.back; // Ruch do do³u
+                    case 2:
+                        return Vector3.left; // Ruch w lewo
+                    case 3:
+                        return Vector3.right; // Ruch w prawo
+                    case 4:
+                        return (Vector3.forward + Vector3.left).normalized; // Ruch ukoœny w lewo do góry
+                    case 5:
+                        return (Vector3.forward + Vector3.right).normalized; // Ruch ukoœny w prawo do góry
+                    case 6:
+                        return (Vector3.back + Vector3.left).normalized; // Ruch ukoœny w lewo do do³u
+                    case 7:
+                        return (Vector3.back + Vector3.right).normalized; // Ruch ukoœny w prawo do do³u
+                    case 8:
+                        return Vector3.left; // Ruch w lewo
+                    case 9:
+                        return Vector3.left; // Ruch w lewo
+                    case 10:
+                        return (Vector3.forward + Vector3.left).normalized; // Ruch ukoœny w lewo do góry
+                    case 11:
+                        return (Vector3.forward + Vector3.left).normalized; // Ruch ukoœny w lewo do góry
+                    case 12:
+                        return (Vector3.forward + Vector3.left).normalized; // Ruch ukoœny w lewo do góry
+                    case 13:
+                        return (Vector3.forward + Vector3.right).normalized; // Ruch ukoœny w prawo do góry
+                    case 14:
+                        return (Vector3.back + Vector3.left).normalized; // Ruch ukoœny w lewo do do³u
+                    case 15:
+                        return (Vector3.back + Vector3.left).normalized; // Ruch ukoœny w lewo do do³u
+                    case 16:
+                        return (Vector3.back + Vector3.left).normalized; // Ruch ukoœny w lewo do do³u
+                    case 17:
+                        return (Vector3.back + Vector3.right).normalized; // Ruch ukoœny w prawo do do³u
+                    case 18:
+                        return (Vector3.back + Vector3.right).normalized; // Ruch ukoœny w prawo do do³u
+                    default:
+                        return Vector3.forward; // Domyœlnie ruch do góry
+                }
+            }  
         }
         
         //Debug.Log("Agent " + ID.ToString() + ": " + Mode.ToString());
@@ -192,18 +270,31 @@ public class Agent : MonoBehaviour, IDetectable
     }
 
 
+    private void Initialize(int maxAgents)
+    {
+        if (ID >= maxAgents)
+        {
+            Destroy(gameObject);
+        } else
+        {
+            isInitialized = true;
+        }
+    }
+
     // Method to pause and resume acquisition
     private void StartAcquisition() { acquisitionActive = true; }
     private void PauseAcquisition() { acquisitionActive = false; }
 
     private void OnEnable()
     {
+        EventManager.AgentInitializationEvent += Initialize;
         EventManager.AcquisitionStartEvent += StartAcquisition;
         EventManager.AcquisitionPauseEvent += PauseAcquisition;
     }
 
     private void OnDisable()
     {
+        EventManager.AgentInitializationEvent -= Initialize;
         EventManager.AcquisitionStartEvent -= StartAcquisition;
         EventManager.AcquisitionPauseEvent -= PauseAcquisition;
     }
