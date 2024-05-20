@@ -556,7 +556,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 601ef4c951dabee43996c70885047c79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  noAgents: 4
+  noAgents: 1
 --- !u!114 &367686674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -573,8 +573,8 @@ MonoBehaviour:
   numberOfBalls: 15
   planeHeight: 0.125
   ballRadius: 0.125
-  outerSquareMin: {x: -4.9, y: -4.9}
-  outerSquareMax: {x: 4.9, y: 4.9}
+  outerSquareMin: {x: -2, y: -2}
+  outerSquareMax: {x: 2, y: 2}
   innerSquareMin: {x: -1, y: -1}
   innerSquareMax: {x: 1, y: 1}
 --- !u!1001 &380535812

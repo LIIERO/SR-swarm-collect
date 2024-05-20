@@ -6,17 +6,18 @@ using Pathfinding;
 using Unity.VisualScripting;
 using UnityEditor.Search;
 
+
 public class Agent : MonoBehaviour, IDetectable
 {
-    public int ID {  get; private set; }
+    public int ID { get; private set; }
     public AgentMode Mode { get; private set; }
 
     public static int nextId = 0; // For simple initialization of unique id
     private IVessel ballBasket;
-    
+
     public float viewRange = 1.0f;
     public float movementSpeed = 2.0f;
-    
+
     private Vector3 searchDirection;
     private float changeSearchDirectionTime = 2f;
     private float searchTimer;
@@ -188,9 +189,9 @@ public class Agent : MonoBehaviour, IDetectable
                     default:
                         return Vector3.forward; // Domyœlnie ruch do góry
                 }
-            }  
+            }
         }
-        
+
         //Debug.Log("Agent " + ID.ToString() + ": " + Mode.ToString());
     }
 
@@ -204,8 +205,8 @@ public class Agent : MonoBehaviour, IDetectable
 
             detectedCollectable.Collect(GetComponent<IDetectable>());
             Mode = AgentMode.bringingBallBack;
-         
-        } 
+
+        }
         else if (Mode == AgentMode.bringingBallBack)
         {
             IVessel detectedVessel = GetInterfaceOfObject<IVessel>(other.gameObject);
@@ -250,18 +251,44 @@ public class Agent : MonoBehaviour, IDetectable
         return tagObjListPairs;
     }
 
+
+    //private ICollectable ReserveCollectable(List<IDetectable> collectablelist)
+    //{
+    //    foreach (ICollectable collectable in collectablelist)
+    //    {
+    //        if (!collectable.IsReserved() && !collectable.IsCollected())
+    //        {
+    //            collectable.Reserve();
+    //            return collectable;
+    //        }
+    //    }
+    //    return null;
+    //}
+
+
     private ICollectable ReserveCollectable(List<IDetectable> collectableList)
     {
+        ICollectable nearestBall = null;
+        float minDistance = Mathf.Infinity;
         foreach (ICollectable collectable in collectableList)
         {
             if (!collectable.IsReserved() && !collectable.IsCollected())
             {
-                collectable.Reserve();
-                return collectable;
+                if (Vector3.Distance(transform.position, collectable.GetPosition()) < minDistance)
+                {
+                    minDistance = Vector3.Distance(transform.position, collectable.GetPosition());
+                    nearestBall = collectable;
+                }
             }
+        }
+        if (nearestBall != null)
+        {
+            nearestBall.Reserve();
+            return nearestBall;
         }
         return null;
     }
+
 
     private T GetInterfaceOfObject<T>(GameObject obj) // TODO: Daæ do do jakiejœ statycznej klasy "Utils" ¿eby wszyscy mogli korzystaæ
     {
