@@ -268,23 +268,24 @@ public class Agent : MonoBehaviour, IDetectable
 
     private ICollectable ReserveCollectable(List<IDetectable> collectableList)
     {
-        ICollectable nearestBall = null;
+        ICollectable nearestCollectable = null;
         float minDistance = Mathf.Infinity;
         foreach (ICollectable collectable in collectableList)
         {
             if (!collectable.IsReserved() && !collectable.IsCollected())
             {
-                if (Vector3.Distance(transform.position, collectable.GetPosition()) < minDistance)
+                float distance = Vector3.Distance(transform.position, collectable.GetPosition());
+                if (distance < minDistance)
                 {
-                    minDistance = Vector3.Distance(transform.position, collectable.GetPosition());
-                    nearestBall = collectable;
+                    minDistance = distance;
+                    nearestCollectable = collectable;
                 }
             }
         }
-        if (nearestBall != null)
+        if (nearestCollectable != null)
         {
-            nearestBall.Reserve();
-            return nearestBall;
+            nearestCollectable.Reserve();
+            return nearestCollectable;
         }
         return null;
     }
