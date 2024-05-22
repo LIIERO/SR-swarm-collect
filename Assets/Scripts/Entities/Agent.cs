@@ -4,19 +4,20 @@ using GlobalEnums;
 using System.Linq;
 using Pathfinding;
 using Unity.VisualScripting;
-using UnityEditor.Search;
 
 
 public class Agent : MonoBehaviour, IDetectable
 {
+    [SerializeField] private Data agentSpeed;
+    [SerializeField] private Data agentVision;
     public int ID { get; private set; }
     public AgentMode Mode { get; private set; }
 
     public static int nextId = 0; // For simple initialization of unique id
     private IVessel ballBasket;
 
-    public float viewRange = 1.0f;
-    public float movementSpeed = 2.0f;
+    private float movementSpeed;
+    private float viewRange;
 
     private Vector3 searchDirection;
     private float changeSearchDirectionTime = 2f;
@@ -46,6 +47,9 @@ public class Agent : MonoBehaviour, IDetectable
     // Start is called before the first frame update
     private void Start()
     {
+        movementSpeed = agentSpeed.Value;
+        viewRange = agentVision.Value;
+
         aiPath.maxSpeed = movementSpeed;
 
         ID = nextId;

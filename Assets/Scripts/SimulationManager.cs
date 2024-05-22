@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class SimulationManager : MonoBehaviour
 {
-    [SerializeField] private int noAgents;
-    private int maxAgents;
-
+    [SerializeField] private Data numberOfAgents;
+    private int noAgents;
     private List<Agent> agents; // Lista agentów w symulacji
     private float updateInterval = 0.05f; // Czas w sekundach miêdzy aktualizacjami
     private bool acquisitionActive;
@@ -15,9 +15,9 @@ public class SimulationManager : MonoBehaviour
 
     private void Awake()
     {
+        noAgents = (int)numberOfAgents.Value;
         acquisitionActive = false;
         acquisitionFinished = false;
-        //maxAgents = GetObjectsOfType
     }
 
     private void Start()
@@ -50,6 +50,12 @@ public class SimulationManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space)) // Wstrzymaj lub wznow akwizycjê
         {
             ToggleAcquisition();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            EndAcquisition();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
         }
 
         //Debug.LogWarning(acquisitionFinished);

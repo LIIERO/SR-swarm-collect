@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class BallGeneratorScript : MonoBehaviour
 {
+    [SerializeField] private Data numberOfBalls;
     public GameObject Ball;
-    public int numberOfBalls = 10;
     public float planeHeight = 0.125f;
     public float ballRadius = 0.5f;
     public Vector2 outerSquareMin = new Vector2(-4.9f, -4.9f);
@@ -14,16 +14,18 @@ public class BallGeneratorScript : MonoBehaviour
     public Vector2 innerSquareMax = new Vector2(1, 1);
 
     private List<Vector3> spawnedPositions = new List<Vector3>();
+    private int noBalls;
 
     // Start is called before the first frame update
     void Start()
     {
+        noBalls = (int)numberOfBalls.Value;
         SpawnBalls();
     }
 
     void SpawnBalls()
     {
-        for (int i = 0; i < numberOfBalls; i++)
+        for (int i = 0; i < noBalls; i++)
         {
             Vector3 randomPos = GetRandomPosition();
             Instantiate(Ball, randomPos, Quaternion.identity);
