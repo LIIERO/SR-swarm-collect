@@ -54,7 +54,11 @@ public class SimulationManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            EndAcquisition();
+            //EndAcquisition()
+
+            //SceneManager.UnloadScene(SceneManager.GetActiveScene().buildIndex);
+            //SceneManager.LoadScene(0);
+
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
         }
 

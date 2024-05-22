@@ -8,7 +8,6 @@ public class Launcher : MonoBehaviour
 {
     public void StartSimulation () {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        
     }
 
     public void ExitApplication (){
