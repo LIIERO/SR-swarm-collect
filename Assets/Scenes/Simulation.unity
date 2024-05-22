@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -573,8 +573,8 @@ MonoBehaviour:
   Ball: {fileID: 5033623571535989281, guid: 579cdce561664ec4e91b3a0d6d1f3dbf, type: 3}
   planeHeight: 0.125
   ballRadius: 0.125
-  outerSquareMin: {x: -4, y: -4}
-  outerSquareMax: {x: 4, y: 4}
+  outerSquareMin: {x: -4.7, y: -4.7}
+  outerSquareMax: {x: 4.7, y: 4.7}
   innerSquareMin: {x: -1, y: -1}
   innerSquareMax: {x: 1, y: 1}
 --- !u!1001 &380535812
