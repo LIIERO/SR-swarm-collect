@@ -42,6 +42,7 @@ public class Agent : MonoBehaviour, IDetectable
     private void Awake()
     {
         aiPath = GetComponent<AIPath>();
+        aiPath.maxSpeed = movementSpeed;
     }
 
     // Start is called before the first frame update

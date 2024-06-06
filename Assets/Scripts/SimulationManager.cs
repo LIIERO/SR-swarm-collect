@@ -44,7 +44,8 @@ public class SimulationManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.R)) // Reload current scene
         {
-            RestartSimulation();
+            ResetStatic();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name); // reload current scene
         }
 
         if (Input.GetKeyDown(KeyCode.Space)) // Wstrzymaj lub wznow akwizycjê
@@ -54,11 +55,7 @@ public class SimulationManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            //EndAcquisition()
-
-            //SceneManager.UnloadScene(SceneManager.GetActiveScene().buildIndex);
-            //SceneManager.LoadScene(0);
-
+            ResetStatic();
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
         }
 
@@ -107,11 +104,10 @@ public class SimulationManager : MonoBehaviour
         EventManager.InvokeAgentInitializationEvent(noAgents);
     }
     
-    private void RestartSimulation()
+    private void ResetStatic()
     {
         Agent.nextId = 0; // reset id
         Ball.Count = 0; // reset ball count
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name); // reload current scene
     }
 
 

@@ -133,8 +133,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   agentSpeed: {fileID: 11400000, guid: 981508a527b738a4eb1c64dc8a6a25c5, type: 2}
   agentVision: {fileID: 11400000, guid: 2413d6d332ef9ca4f9c91cf693a1e767, type: 2}
-  movementSpeed: 2
-  viewRange: 2
 --- !u!54 &1495672059189885479
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -291,7 +289,7 @@ MonoBehaviour:
   radius: 1.5
   height: 2
   canMove: 1
-  maxSpeed: 1
+  maxSpeed: 5
   gravity: {x: NaN, y: NaN, z: NaN}
   groundMask:
     serializedVersion: 2
